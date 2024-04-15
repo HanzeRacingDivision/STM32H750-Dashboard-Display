@@ -35,4 +35,14 @@ void Screen1View::handleTickEvent()
 	} else {
 		upShiftArrow_Warning.setVisible(0);
 	}
+
+	EngTemp_Thermom.updateValue(EngTemp_Thermom.getValue() + 1, 0);
+
+	if (EngTemp_Thermom.getValue() >= 80)
+	{
+		EngTemp_Warning.setVisible(1);
+	} else {
+		EngTemp_Warning.setVisible(0);
+	}
+
 }
