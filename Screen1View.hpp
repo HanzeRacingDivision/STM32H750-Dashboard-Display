@@ -15,6 +15,7 @@ public:
     void handleTickEvent();
 protected:
     int gauge1modifier;
+    int EngTempmodifier;
 };
 
 #endif // SCREEN1VIEW_HPP
