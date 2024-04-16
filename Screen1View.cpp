@@ -21,15 +21,15 @@ void Screen1View::handleTickEvent()
 	int gauge1minValue;
 	int gauge1maxValue;
 	gauge1.getRange(gauge1minValue, gauge1maxValue);
-
+/*
 	if (gauge1.getValue()== gauge1minValue || gauge1.getValue()== gauge1maxValue)
 	{
 		gauge1modifier *= -1;
 	}
-
+*/
 	gauge1.updateValue(gauge1.getValue() + gauge1modifier, 0);
 
-	if (gauge1.getValue() >= 800)
+	if (gauge1.getValue() >= gauge1maxValue*0.8)
 	{
 		upShiftArrow_Warning.setVisible(true);
 		upShiftArrow_Warning.invalidate();
@@ -49,14 +49,19 @@ void Screen1View::handleTickEvent()
 
 	EngTemp_Thermom.updateValue(EngTemp_Thermom.getValue() + EngTempmodifier, 0);
 
+	/*
 	if (EngTemp_Thermom.getValue() >= 80)
 	{
 		EngTemp_Warning.setVisible(true);
 	} else {
 		EngTemp_Warning.setVisible(false);
 	}
+	 */
 
 	Unicode::snprintf(textArea1Buffer, TEXTAREA1_SIZE, "%d", EngTemp_Thermom.getValue());
 	textArea1.invalidate();
+
+	Unicode::snprintf(RPM_TextBuffer, RPM_TEXT_SIZE, "%d", gauge1.getValue());
+	RPM_Text.invalidate();
 
 }
