@@ -7,7 +7,8 @@
 #include <images/BitmapDatabase.hpp>
 #include <texts/TextKeysAndLanguages.hpp>
 
-Screen1ViewBase::Screen1ViewBase()
+Screen1ViewBase::Screen1ViewBase() :
+    buttonCallback(this, &Screen1ViewBase::buttonCallbackHandler)
 {
     touchgfx::CanvasWidgetRenderer::setupBuffer(canvasBuffer, CANVAS_BUFFER_SIZE);
     
@@ -15,53 +16,24 @@ Screen1ViewBase::Screen1ViewBase()
     __background.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     add(__background);
 
-    Background_img.setXY(-62, 0);
+    Background_img.setXY(-262, -194);
     Background_img.setBitmap(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_BACKGROUNDS_1024X600_SHATTERED_RAIN_DARK_ID));
     add(Background_img);
 
-    HRDLogo_img.setBitmap(touchgfx::Bitmap(BITMAP_HARD_LOGO_ID));
-    HRDLogo_img.setPosition(0, 0, 133, 64);
-    HRDLogo_img.setScalingAlgorithm(touchgfx::ScalableImage::NEAREST_NEIGHBOR);
-    add(HRDLogo_img);
-
-    STLogo_img.setBitmap(touchgfx::Bitmap(BITMAP_ST_LOGO_BLUE_VERTICAL_ID));
-    STLogo_img.setPosition(333, 0, 147, 64);
-    STLogo_img.setScalingAlgorithm(touchgfx::ScalableImage::NEAREST_NEIGHBOR);
-    add(STLogo_img);
-
-    gauge1.setBackground(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_CIRCLEPROGRESS_BACKGROUNDS_LARGE_ID));
+    gauge1.setBackground(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_GAUGE_SMALL_BACKGROUNDS_ACTIVE_PRECISION_ID));
     gauge1.setBackgroundOffset(10, 15);
-    gauge1.setPosition(32, 126, 208, 136);
-    gauge1.setCenter(103, 120);
-    gauge1.setStartEndAngle(-100, 100);
-    gauge1.setRange(0, 100);
-    gauge1.setValue(100);
+    gauge1.setPosition(155, 115, 196, 157);
+    gauge1.setCenter(100, 120);
+    gauge1.setStartEndAngle(-80, 80);
+    gauge1.setRange(0, 170);
+    gauge1.setValue(0);
     gauge1.setEasingEquation(touchgfx::EasingEquations::linearEaseIn);
     gauge1.setNeedle(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_GAUGE_MEDIUM_NEEDLES_SMOOTH_ID, 7.0f, 66.7f);
     gauge1.setMovingNeedleRenderingAlgorithm(touchgfx::TextureMapper::BILINEAR_INTERPOLATION);
     gauge1.setSteadyNeedleRenderingAlgorithm(touchgfx::TextureMapper::BILINEAR_INTERPOLATION);
     add(gauge1);
 
-    RPM_Text.setPosition(123, 252, 40, 20);
-    RPM_Text.setColor(touchgfx::Color::getColorFromRGB(237, 232, 221));
-    RPM_Text.setLinespacing(0);
-    RPM_Text.setTypedText(touchgfx::TypedText(T___SINGLEUSE_CHPH));
-    add(RPM_Text);
-
-    lineProgress1.setXY(350, 72);
-    lineProgress1.setProgressIndicatorPosition(0, 0, 24, 200);
-    lineProgress1.setRange(0, 100);
-    lineProgress1.setBackground(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_LINEPROGRESS_BACKGROUNDS_IMAGE_STYLED_THERMOMETERS_THERMOMETER_SMALL_90_ID));
-    lineProgress1Painter.setBitmap(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_LINEPROGRESS_FILLERS_STYLED_THERMOMETERS_THERMOMETER_SMALL_ACTIVE_90_ID));
-    lineProgress1.setPainter(lineProgress1Painter);
-    lineProgress1.setStart(12, 200);
-    lineProgress1.setEnd(12, 0);
-    lineProgress1.setLineWidth(24);
-    lineProgress1.setLineEndingStyle(touchgfx::Line::BUTT_CAP_ENDING);
-    lineProgress1.setValue(60);
-    add(lineProgress1);
-
-    lineProgress2.setXY(418, 72);
+    lineProgress2.setXY(79, 72);
     lineProgress2.setProgressIndicatorPosition(0, 0, 24, 200);
     lineProgress2.setRange(0, 100);
     lineProgress2.setBackground(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_LINEPROGRESS_BACKGROUNDS_IMAGE_STYLED_THERMOMETERS_THERMOMETER_SMALL_90_ID));
@@ -74,41 +46,99 @@ Screen1ViewBase::Screen1ViewBase()
     lineProgress2.setValue(80);
     add(lineProgress2);
 
-    boxWithBorder1.setPosition(185, 72, 135, 76);
+    HRDLogo_img.setBitmap(touchgfx::Bitmap(BITMAP_HARD_LOGO_ID));
+    HRDLogo_img.setPosition(0, -7, 158, 72);
+    HRDLogo_img.setScalingAlgorithm(touchgfx::ScalableImage::NEAREST_NEIGHBOR);
+    HRDLogo_img.setAlpha(63);
+    add(HRDLogo_img);
+
+    STLogo_img.setBitmap(touchgfx::Bitmap(BITMAP_ST_LOGO_BLUE_VERTICAL_ID));
+    STLogo_img.setPosition(344, -3, 136, 64);
+    STLogo_img.setScalingAlgorithm(touchgfx::ScalableImage::NEAREST_NEIGHBOR);
+    STLogo_img.setAlpha(67);
+    add(STLogo_img);
+
+    RPM_Text.setPosition(196, 245, 139, 27);
+    RPM_Text.setColor(touchgfx::Color::getColorFromRGB(13, 13, 12));
+    RPM_Text.setLinespacing(0);
+    Unicode::snprintf(RPM_TextBuffer, RPM_TEXT_SIZE, "%s", touchgfx::TypedText(T_RPMTEXTWILDCARD).getText());
+    RPM_Text.setWildcard(RPM_TextBuffer);
+    RPM_Text.setTypedText(touchgfx::TypedText(T___SINGLEUSE_CHPH));
+    add(RPM_Text);
+
+    lineProgress1.setXY(28, 72);
+    lineProgress1.setProgressIndicatorPosition(0, 0, 24, 200);
+    lineProgress1.setRange(0, 100);
+    lineProgress1.setBackground(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_LINEPROGRESS_BACKGROUNDS_IMAGE_STYLED_THERMOMETERS_THERMOMETER_SMALL_90_ID));
+    lineProgress1Painter.setBitmap(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_LINEPROGRESS_FILLERS_STYLED_THERMOMETERS_THERMOMETER_SMALL_ACTIVE_90_ID));
+    lineProgress1.setPainter(lineProgress1Painter);
+    lineProgress1.setStart(12, 200);
+    lineProgress1.setEnd(12, 0);
+    lineProgress1.setLineWidth(24);
+    lineProgress1.setLineEndingStyle(touchgfx::Line::BUTT_CAP_ENDING);
+    lineProgress1.setValue(60);
+    add(lineProgress1);
+
+    EngTemp_Thermom.setXY(440, 72);
+    EngTemp_Thermom.setProgressIndicatorPosition(0, 0, 24, 200);
+    EngTemp_Thermom.setRange(0, 100);
+    EngTemp_Thermom.setBackground(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_LINEPROGRESS_BACKGROUNDS_IMAGE_STYLED_THERMOMETERS_THERMOMETER_SMALL_90_ID));
+    EngTemp_ThermomPainter.setBitmap(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_LINEPROGRESS_FILLERS_STYLED_THERMOMETERS_THERMOMETER_SMALL_ACTIVE_90_ID));
+    EngTemp_Thermom.setPainter(EngTemp_ThermomPainter);
+    EngTemp_Thermom.setStart(12, 200);
+    EngTemp_Thermom.setEnd(12, 0);
+    EngTemp_Thermom.setLineWidth(24);
+    EngTemp_Thermom.setLineEndingStyle(touchgfx::Line::BUTT_CAP_ENDING);
+    EngTemp_Thermom.setValue(80);
+    add(EngTemp_Thermom);
+
+    boxWithBorder1.setPosition(186, 10, 135, 76);
     boxWithBorder1.setColor(touchgfx::Color::getColorFromRGB(76, 116, 135));
     boxWithBorder1.setBorderColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     boxWithBorder1.setBorderSize(5);
     add(boxWithBorder1);
 
-    textArea1.setXY(216, 99);
+    textArea1.setPosition(211, 35, 96, 26);
     textArea1.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
     textArea1.setLinespacing(0);
     Unicode::snprintf(textArea1Buffer, TEXTAREA1_SIZE, "%s", touchgfx::TypedText(T_SPEEDVALUEDISPLAYED).getText());
     textArea1.setWildcard(textArea1Buffer);
-    textArea1.resizeToCurrentText();
     textArea1.setTypedText(touchgfx::TypedText(T___SINGLEUSE_A0WS));
     add(textArea1);
 
     LeakingOil_Warning.setBitmap(touchgfx::Bitmap(BITMAP_LEAKINGOIL_WARNING_ID));
-    LeakingOil_Warning.setPosition(166, 0, 50, 41);
+    LeakingOil_Warning.setPosition(112, 211, 50, 41);
     LeakingOil_Warning.setScalingAlgorithm(touchgfx::ScalableImage::NEAREST_NEIGHBOR);
+    LeakingOil_Warning.setVisible(false);
     add(LeakingOil_Warning);
 
     EngTemp_Warning.setBitmap(touchgfx::Bitmap(BITMAP_ENGINETEMP_WARNING_ID));
-    EngTemp_Warning.setPosition(430, 72, 63, 65);
+    EngTemp_Warning.setPosition(225, 84, 50, 41);
     EngTemp_Warning.setScalingAlgorithm(touchgfx::ScalableImage::NEAREST_NEIGHBOR);
+    EngTemp_Warning.setVisible(false);
     add(EngTemp_Warning);
 
     TirePressure_Warning.setBitmap(touchgfx::Bitmap(BITMAP_TIREPRESSURE_WARNING_ID));
-    TirePressure_Warning.setPosition(239, 0, 50, 41);
+    TirePressure_Warning.setPosition(137, 136, 46, 36);
     TirePressure_Warning.setScalingAlgorithm(touchgfx::ScalableImage::NEAREST_NEIGHBOR);
+    TirePressure_Warning.setVisible(false);
     add(TirePressure_Warning);
 
     upShiftArrow_Warning.setBitmap(touchgfx::Bitmap(BITMAP_UPSHIFTARROW_WARNING_ID));
-    upShiftArrow_Warning.setPosition(124, 177, 25, 35);
+    upShiftArrow_Warning.setPosition(247, 164, 25, 35);
     upShiftArrow_Warning.setScalingAlgorithm(touchgfx::ScalableImage::NEAREST_NEIGHBOR);
-    upShiftArrow_Warning.setVisible(false);
     add(upShiftArrow_Warning);
+
+    UpShiftButton.setXY(327, 115);
+    UpShiftButton.setBitmaps(touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BUTTON_REGULAR_HEIGHT_36_TINY_ROUND_ACTIVE_ID), touchgfx::Bitmap(BITMAP_ALTERNATE_THEME_IMAGES_WIDGETS_BUTTON_REGULAR_HEIGHT_36_TINY_ROUND_PRESSED_ID));
+    UpShiftButton.setAction(buttonCallback);
+    add(UpShiftButton);
+
+    textArea2.setXY(342, 121);
+    textArea2.setColor(touchgfx::Color::getColorFromRGB(0, 0, 0));
+    textArea2.setLinespacing(0);
+    textArea2.setTypedText(touchgfx::TypedText(T___SINGLEUSE_DGTA));
+    add(textArea2);
 }
 
 Screen1ViewBase::~Screen1ViewBase()
@@ -119,4 +149,15 @@ Screen1ViewBase::~Screen1ViewBase()
 void Screen1ViewBase::setupScreen()
 {
 
+}
+
+void Screen1ViewBase::buttonCallbackHandler(const touchgfx::AbstractButton& src)
+{
+    if (&src == &UpShiftButton)
+    {
+        //upshiftButton
+        //When UpShiftButton clicked update value gauge1
+        //Update value gauge1 over 0ms time
+        gauge1.updateValue(0, 0);
+    }
 }
