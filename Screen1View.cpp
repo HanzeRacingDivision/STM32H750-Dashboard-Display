@@ -2,7 +2,7 @@
 
 Screen1View::Screen1View()
 {
-	gauge1modifier = 1;
+	gauge1modifier = 25;
 	EngTempmodifier = 1;
 }
 
@@ -38,27 +38,7 @@ void Screen1View::handleTickEvent()
 		upShiftArrow_Warning.invalidate();
 	}
 
-	int EngTempMinValue;
-	int EngTempMaxValue;
-	EngTemp_Thermom.getRange(EngTempMinValue, EngTempMaxValue);
-
-	if (EngTemp_Thermom.getValue()== EngTempMinValue || EngTemp_Thermom.getValue()== EngTempMaxValue)
-	{
-		EngTempmodifier *= -1;
-	}
-
-	EngTemp_Thermom.updateValue(EngTemp_Thermom.getValue() + EngTempmodifier, 0);
-
-	/*
-	if (EngTemp_Thermom.getValue() >= 80)
-	{
-		EngTemp_Warning.setVisible(true);
-	} else {
-		EngTemp_Warning.setVisible(false);
-	}
-	 */
-
-	Unicode::snprintf(textArea1Buffer, TEXTAREA1_SIZE, "%d", EngTemp_Thermom.getValue());
+	Unicode::snprintf(textArea1Buffer, TEXTAREA1_SIZE, "%d", gauge1.getValue() / 20);
 	textArea1.invalidate();
 
 	Unicode::snprintf(RPM_TextBuffer, RPM_TEXT_SIZE, "%d", gauge1.getValue());
